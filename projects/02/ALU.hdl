@@ -62,8 +62,15 @@ CHIP ALU {
    Not16(in=fOut, out=notFOut);
    Mux16(a=fOut, b=notFOut, sel=no, out=tempOut);
    And16(a=tempOut, b=true, out=out);
+   
+   And16(a=tempOut, b=true, out[0..7]=firstTempout);
+   And16(a=tempOut, b=true, out[8..15]=secondTempout);
+   And16(a=tempOut, b=true, out[15]=lastBit);
    // if (out == 0) set zr = 1
-   //And16(a=out, b=true, out=flag);
-   //Not16(in=flag, out=zr);
+   Or8Way(in=firstTempout, out=temp);
+   Or8Way(in=secondTempout, out=temp2);
+   Or(a=temp, b=temp2, out=temp3);
+   Not(in=temp3, out=zr);
    // if (out < 0) set ng = 1
+   And(a=lastBit, b=true, out=ng);
 }
